@@ -43,6 +43,12 @@ http://localhost:3001
 ```
 (or the port shown in your terminal)
 
+
+## Screenshot
+
+![Wallet Balance UI](./assets/screenshot.png)
+
+
 ## Key Improvements in Refactored Version
 
 1. **Type Safety**

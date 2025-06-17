@@ -1,7 +1,19 @@
-import { Box, BoxProps } from "@mui/material";
 import { FC, useMemo } from "react";
-import { usePrices } from "./hooks/usePrices";
+import {
+  Box,
+  BoxProps,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { useWalletBalances } from "./hooks/useWalletBalances";
+import { usePrices } from "./hooks/usePrices";
 
 // Proper type definitions
 type Blockchain = "Osmosis" | "Ethereum" | "Arbitrum" | "Zilliqa" | "Neo";
@@ -20,6 +32,7 @@ interface WalletPageProps extends Pick<BoxProps, "className" | "style"> {}
 
 // Row component props
 interface WalletRowProps {
+  amount: number;
   usdValue: number;
   formattedAmount: string;
   currency: string;
@@ -27,19 +40,33 @@ interface WalletRowProps {
 
 // Separate Row component with proper memoization
 const WalletRow: FC<WalletRowProps> = ({
+  amount,
   usdValue,
   formattedAmount,
   currency,
 }) => (
-  <Box className="wallet-row">
-    <span>{currency}</span>
-    <span>{formattedAmount}</span>
-    <span>${usdValue.toFixed(2)}</span>
-  </Box>
+  <TableRow>
+    <TableCell>
+      <Typography variant="body1" fontWeight="medium">
+        {currency}
+      </Typography>
+    </TableCell>
+    <TableCell align="right">
+      <Typography variant="body1" fontFamily="monospace">
+        {formattedAmount}
+      </Typography>
+    </TableCell>
+    <TableCell align="right">
+      <Typography variant="body1" fontFamily="monospace" color="primary">
+        ${usdValue.toFixed(2)}
+      </Typography>
+    </TableCell>
+  </TableRow>
 );
 
 // Main component with proper typing and optimizations
 export const WalletPage: FC<WalletPageProps> = ({ className, style }) => {
+  const theme = useTheme();
   const balances = useWalletBalances();
   const prices = usePrices();
 
@@ -77,15 +104,58 @@ export const WalletPage: FC<WalletPageProps> = ({ className, style }) => {
   }, [sortedBalances, prices]);
 
   return (
-    <Box className={className} style={style}>
-      {balancesWithUsd.map((balance) => (
-        <WalletRow
-          key={`${balance.blockchain}-${balance.currency}`}
-          usdValue={balance.usdValue}
-          formattedAmount={balance.formattedAmount}
-          currency={balance.currency}
-        />
-      ))}
+    <Box
+      className={className}
+      style={style}
+      sx={{
+        p: 3,
+        bgcolor: "background.default",
+        minHeight: "100vh",
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          maxWidth: 600,
+          mx: "auto",
+          overflow: "hidden",
+          bgcolor: "background.paper",
+        }}
+      >
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
+          <Typography variant="h6" component="h1">
+            Wallet Balances
+          </Typography>
+        </Box>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography variant="subtitle2">Currency</Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="subtitle2">Amount</Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="subtitle2">Value (USD)</Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {balancesWithUsd.map((balance) => (
+                <WalletRow
+                  key={`${balance.blockchain}-${balance.currency}`}
+                  amount={balance.amount}
+                  usdValue={balance.usdValue}
+                  formattedAmount={balance.formattedAmount}
+                  currency={balance.currency}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </Box>
   );
 };

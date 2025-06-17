@@ -7,12 +7,26 @@ import WalletPage from "./refactored-wallet";
 // Create a theme instance
 const theme = createTheme({
   palette: {
-    mode: "dark",
+    mode: "light",
+    background: {
+      default: "#f5f5f5",
+      paper: "#ffffff",
+    },
     primary: {
-      main: "#90caf9",
+      main: "#1976d2",
     },
     secondary: {
-      main: "#ce93d8",
+      main: "#dc004e",
+    },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    body1: {
+      fontSize: "0.9rem",
+    },
+    subtitle2: {
+      fontWeight: 600,
+      color: "#666",
     },
   },
 });
@@ -21,9 +35,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div style={{ padding: "2rem" }}>
-        <WalletPage />
-      </div>
+      <WalletPage />
     </ThemeProvider>
   </React.StrictMode>
 );
