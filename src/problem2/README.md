@@ -14,7 +14,7 @@ A modern, responsive currency swap interface built with React, TypeScript, and M
 - ⌨️ Keyboard navigation support
 - ♿ Accessibility features
 - ✅ Input validation
-- 🧪 Comprehensive test coverage
+- 🧪 Comprehensive test coverage (>85%)
 
 ## Tech Stack
 
@@ -63,13 +63,30 @@ To view test coverage:
 npm run test:coverage
 ```
 
+Current test coverage:
+```
+File               | % Stmts | % Branch | % Funcs | % Lines
+-------------------|---------|----------|---------|--------
+All files          |   87.77 |    78.57 |   93.33 |   87.50
+ AmountInput.tsx   |     100 |       90 |     100 |     100
+ App.tsx           |   81.96 |    71.87 |   85.71 |   81.35
+ TokenSelector.tsx |     100 |    71.42 |     100 |     100
+ utils.ts          |     100 |      100 |     100 |     100
+```
+
 ## Project Structure
 
 ```
 src/
 ├── __tests__/          # Test files
+│   ├── AmountInput.test.tsx
+│   ├── App.test.tsx
+│   ├── TokenSelector.test.tsx
+│   └── utils.test.ts
 ├── assets/             # Static assets
 ├── components/         # React components
+│   ├── AmountInput.tsx
+│   └── TokenSelector.tsx
 ├── utils.ts            # Utility functions
 ├── App.tsx             # Main application component
 └── main.tsx            # Application entry point
@@ -94,34 +111,33 @@ https://github.com/Switcheo/token-icons
 - Keyboard navigation support
 - Token filtering (excludes already selected token)
 - Fallback handling for missing token icons
+- Error handling for invalid token data
 
 ### Amount Input
 - Real-time validation
 - Numeric input with decimal support
 - Automatic conversion between tokens
 - Responsive to price changes
+- Error handling for invalid inputs
 
 ### Swap Functionality
 - Instant token swap with position switching
 - Maintains amount values during swap
 - Real-time price calculations
+- Error handling for edge cases
 
 ### Error Handling
 - Graceful handling of API failures
-- Validation feedback
+- Input validation feedback
 - Fallback UI states
+- Comprehensive error state testing
 
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+### Testing
+- Unit tests for all components
+- Integration tests for token swapping
+- Error handling test coverage
+- Edge case testing
+- Real-time price update testing
 
 ---
 
