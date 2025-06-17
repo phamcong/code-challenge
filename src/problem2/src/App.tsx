@@ -24,13 +24,18 @@ const App: React.FC = () => {
       .then((data: Price[]) => {
         // Filter out tokens without a valid price
         const validPrices = data.filter(p => typeof p.price === 'number' && !isNaN(p.price));
-        setPrices(validPrices);
-        setTokens(uniqueTokens(validPrices));
-        setFromToken(validPrices[0]?.currency || "");
-        setToToken(validPrices[1]?.currency || "");
+        setTimeout(() => {
+          setPrices(validPrices);
+          setTokens(uniqueTokens(validPrices));
+          setFromToken(validPrices[0]?.currency || "");
+          setToToken(validPrices[1]?.currency || "");
+          setLoading(false);
+        }, 1000); // 1 second fake delay
       })
-      .catch(() => setError("Failed to fetch token prices."))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        setError("Failed to fetch token prices.");
+        setLoading(false);
+      });
   }, []);
 
   useEffect(() => {
@@ -73,6 +78,11 @@ const App: React.FC = () => {
 
   return (
     <div className="swap-container">
+      {loading && (
+        <div className="spinner">
+          <div className="spinner-inner"></div>
+        </div>
+      )}
       <form className="swap-form" onSubmit={e => e.preventDefault()}>
         <h2>Currency Swap</h2>
         <div className="swap-row">
@@ -99,7 +109,7 @@ const App: React.FC = () => {
             disabled={loading}
             aria-label="Swap tokens"
           >
-            ⇅
+            <span className="swap-icon">⇄</span>
           </button>
           <div className="swap-col">
             <TokenSelector
