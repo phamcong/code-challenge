@@ -1,10 +1,24 @@
-# 99Tech Code Challenge #1 #
+# Frontend Engineer Position - Technical Assessment
 
-Note that if you fork this repository, your responses may be publicly linked to this repo.  
-Please submit your application along with the solutions attached or linked.   
+This repository contains my solutions for the Frontend Engineer technical assessment. Below are links to the detailed documentation for each problem:
 
-It is important that you minimally attempt the problems, even if you do not arrive at a working solution.
+## Solutions
 
-## Submission ##
-You can either provide a link to an online repository, attach the solution in your application, or whichever method you prefer.
-We're cool as long as we can view your solution without any pain.
+### [Problem 1: Three ways to sum to n](./src/problem1/README.md)
+3 different ways to sum to n.
+
+### [Problem 2: Fancy Form](./src/problem2/README.md) 
+Fancy form for currency swap.
+
+### [Problem 3: Messy React](./src/problem3/README.md)
+Refactoring exercise for a React wallet balance component.
+
+## About
+
+This submission demonstrates my skills in:
+- TypeScript/JavaScript
+- React
+- Code organization and documentation
+- Testing and error handling
+- Performance optimization
+- Clean code principles
