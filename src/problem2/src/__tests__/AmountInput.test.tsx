@@ -1,33 +1,82 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import AmountInput from '../AmountInput';
+import { fireEvent, render, screen } from "@testing-library/react";
+import React from "react";
+import AmountInput from "../AmountInput";
 
-describe('AmountInput', () => {
-  it('renders as editable input and calls onChange', () => {
-    const handleChange = jest.fn();
-    render(<AmountInput value="123" onChange={handleChange} />);
-    const input = screen.getByRole('spinbutton');
-    expect(input).toBeInTheDocument();
-    fireEvent.change(input, { target: { value: '456' } });
-    expect(handleChange).toHaveBeenCalledWith('456');
+describe("AmountInput", () => {
+  const mockOnChange = jest.fn();
+
+  beforeEach(() => {
+    mockOnChange.mockClear();
   });
 
-  it('renders as read-only input', () => {
-    render(<AmountInput value="789" readOnly />);
-    const input = screen.getByDisplayValue('789');
-    expect(input).toBeInTheDocument();
-    expect(input).toHaveAttribute('readonly');
+  it("renders with placeholder", () => {
+    render(<AmountInput value="" onChange={mockOnChange} placeholder="Enter amount" />);
+    expect(screen.getByPlaceholderText("Enter amount")).toBeInTheDocument();
   });
 
-  it('renders as disabled input', () => {
-    render(<AmountInput value="123" disabled />);
-    const input = screen.getByDisplayValue('123');
-    expect(input).toBeDisabled();
+  it("displays the provided value", () => {
+    render(<AmountInput value="123.45" onChange={mockOnChange} />);
+    expect(screen.getByRole("textbox")).toHaveValue("123.45");
   });
 
-  it('shows the placeholder', () => {
-    render(<AmountInput value="" placeholder="Enter amount" />);
-    const input = screen.getByPlaceholderText('Enter amount');
-    expect(input).toBeInTheDocument();
+  it("calls onChange with valid number input", () => {
+    render(<AmountInput value="" onChange={mockOnChange} />);
+    const input = screen.getByRole("textbox");
+    
+    fireEvent.change(input, { target: { value: "123.45" } });
+    expect(mockOnChange).toHaveBeenCalledWith("123.45");
   });
-}); 
+
+  it("prevents invalid number input", () => {
+    render(<AmountInput value="" onChange={mockOnChange} />);
+    const input = screen.getByRole("textbox");
+    
+    fireEvent.change(input, { target: { value: "abc" } });
+    expect(mockOnChange).not.toHaveBeenCalled();
+  });
+
+  it("allows decimal numbers", () => {
+    render(<AmountInput value="" onChange={mockOnChange} />);
+    const input = screen.getByRole("textbox");
+    
+    fireEvent.change(input, { target: { value: "12.34" } });
+    expect(mockOnChange).toHaveBeenCalledWith("12.34");
+  });
+
+  it("prevents multiple decimal points", () => {
+    render(<AmountInput value="12.34" onChange={mockOnChange} />);
+    const input = screen.getByRole("textbox");
+    
+    fireEvent.change(input, { target: { value: "12.34." } });
+    expect(mockOnChange).not.toHaveBeenCalled();
+  });
+
+  it("is disabled when disabled prop is true", () => {
+    render(<AmountInput value="" onChange={mockOnChange} disabled />);
+    expect(screen.getByRole("textbox")).toBeDisabled();
+  });
+
+  it("handles backspace correctly", () => {
+    render(<AmountInput value="123" onChange={mockOnChange} />);
+    const input = screen.getByRole("textbox");
+    
+    fireEvent.change(input, { target: { value: "12" } });
+    expect(mockOnChange).toHaveBeenCalledWith("12");
+  });
+
+  it("handles paste events with valid numbers", () => {
+    render(<AmountInput value="" onChange={mockOnChange} />);
+    const input = screen.getByRole("textbox");
+    
+    fireEvent.change(input, { target: { value: "123.45" } });
+    expect(mockOnChange).toHaveBeenCalledWith("123.45");
+  });
+
+  it("handles paste events with invalid input", () => {
+    render(<AmountInput value="" onChange={mockOnChange} />);
+    const input = screen.getByRole("textbox");
+    
+    fireEvent.change(input, { target: { value: "abc123" } });
+    expect(mockOnChange).not.toHaveBeenCalled();
+  });
+});

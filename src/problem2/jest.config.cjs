@@ -1,12 +1,19 @@
-const { createDefaultPreset } = require("ts-jest");
-
-const tsJestTransformCfg = createDefaultPreset().transform;
-
-/** @type {import("jest").Config} **/
 module.exports = {
-  testEnvironment: "jsdom",
-  transform: {
-    ...tsJestTransformCfg,
+  testEnvironment: 'jsdom',
+  moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '\\.(gif|ttf|eot|svg)$': '<rootDir>/__mocks__/fileMock.js'
   },
-  setupFilesAfterEnv: ["<rootDir>/src/__tests__/setupTests.ts"],
+  setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
+  transform: {
+    '^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'] }]
+  },
+  testMatch: ['**/__tests__/**/*.test.(ts|tsx|js|jsx)'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/main.tsx',
+    '!src/vite-env.d.ts',
+    '!src/**/*.d.ts'
+  ]
 };

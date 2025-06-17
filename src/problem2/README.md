@@ -1,41 +1,127 @@
-# Currency Swap Form
+# Currency Swap Interface
 
-![Swap Form Screenshot](./src/assets/screenshot.png)
+A modern, responsive currency swap interface built with React, TypeScript, and Material UI.
 
-A modern, interactive currency swap form built with React and Vite.
+![Screenshot](./src/assets/screenshot.png)
 
 ## Features
 
-- **Two-way swap:** Enter an amount in either input to calculate the other direction instantly.
-- **Token selection:** Choose from available tokens with real-time prices (only tokens with valid rates are shown).
-- **Token icons:** Each token is displayed with its icon for easy identification.
-- **Swap direction:** Instantly swap the direction of the conversion with a single button.
-- **Input validation:** Only valid numbers are accepted; both fields are editable.
-- **Responsive design:** Fully responsive and center-aligned, works on all devices.
-- **Attractive UI:** Card-like layout, modern look, and accessible form controls.
-- **No backend required:** All price data is fetched from a public API.
+- 🔄 Real-time currency conversion
+- 🔍 Searchable token selection with autocomplete
+- 💱 Live price fetching from Switcheo API
+- 🎨 Modern UI with Material Design
+- 📱 Fully responsive layout
+- ⌨️ Keyboard navigation support
+- ♿ Accessibility features
+- ✅ Input validation
+- 🧪 Comprehensive test coverage
 
 ## Tech Stack
-- React + Vite
+
+- React 18
 - TypeScript
-- SCSS for styling
-- Jest + React Testing Library for tests
+- Material UI (MUI)
+- Vite
+- Jest + React Testing Library
+- SCSS
 
-## How to Run
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Start the development server:
-   ```bash
-   npm run dev
-   ```
-3. Open [http://localhost:5173](http://localhost:5173) in your browser.
+## Getting Started
 
-## How to Test
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/phamcong/code-challenge.git
+cd src/problem2
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:5173`
+
+### Running Tests
+
 ```bash
 npm test
 ```
+
+To view test coverage:
+```bash
+npm run test:coverage
+```
+
+## Project Structure
+
+```
+src/
+├── __tests__/          # Test files
+├── assets/             # Static assets
+├── components/         # React components
+├── utils.ts            # Utility functions
+├── App.tsx             # Main application component
+└── main.tsx            # Application entry point
+```
+
+## API Integration
+
+The application fetches token prices from:
+```
+https://interview.switcheo.com/prices.json
+```
+
+Token icons are sourced from Switcheo's token-icons repository:
+```
+https://github.com/Switcheo/token-icons
+```
+
+## Features in Detail
+
+### Token Selection
+- Searchable dropdown with token icons
+- Keyboard navigation support
+- Token filtering (excludes already selected token)
+- Fallback handling for missing token icons
+
+### Amount Input
+- Real-time validation
+- Numeric input with decimal support
+- Automatic conversion between tokens
+- Responsive to price changes
+
+### Swap Functionality
+- Instant token swap with position switching
+- Maintains amount values during swap
+- Real-time price calculations
+
+### Error Handling
+- Graceful handling of API failures
+- Validation feedback
+- Fallback UI states
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 

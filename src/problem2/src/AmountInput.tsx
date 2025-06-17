@@ -1,32 +1,46 @@
 import React from "react";
+import { TextField } from "@mui/material";
 
-type AmountInputProps = {
+interface AmountInputProps {
   value: string;
-  onChange?: (value: string) => void;
-  readOnly?: boolean;
+  onChange: (value: string) => void;
   disabled?: boolean;
   placeholder?: string;
-};
+}
 
 const AmountInput: React.FC<AmountInputProps> = ({
   value,
   onChange,
-  readOnly = false,
   disabled = false,
-  placeholder = "Amount",
+  placeholder = "",
 }) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    // Only allow numbers and decimals
+    if (newValue === "" || /^\d*\.?\d*$/.test(newValue)) {
+      onChange(newValue);
+    }
+  };
+
+  const hasError = value !== "" && !/^\d*\.?\d*$/.test(value);
+
   return (
-    <input
-      type={readOnly ? "text" : "number"}
-      min="0"
-      step="any"
+    <TextField
+      type="text"
       value={value}
-      onChange={onChange ? (e) => onChange(e.target.value) : undefined}
-      readOnly={readOnly}
+      onChange={handleChange}
       disabled={disabled}
       placeholder={placeholder}
+      fullWidth
+      variant="outlined"
+      error={hasError}
+      helperText={hasError ? "Please enter a valid number" : ""}
+      inputProps={{
+        inputMode: "decimal",
+        pattern: "[0-9]*[.]?[0-9]*",
+      }}
     />
   );
 };
 
-export default AmountInput; 
+export default AmountInput;

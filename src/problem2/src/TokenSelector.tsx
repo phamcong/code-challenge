@@ -1,52 +1,73 @@
 import React from "react";
-import { getTokenIcon, Price } from "./utils";
+import { Autocomplete, TextField, Box, InputAdornment } from "@mui/material";
+import { Price } from "./utils";
 
-type TokenSelectorProps = {
+interface TokenSelectorProps {
   value: string;
   onChange: (value: string) => void;
   options: Price[];
   disabled?: boolean;
-  label: string;
-  exclude?: string; // Optionally exclude a token (e.g., the other selected token)
-};
+  label?: string;
+  exclude?: string;
+}
 
 const TokenSelector: React.FC<TokenSelectorProps> = ({
   value,
   onChange,
   options,
-  disabled,
-  label,
-  exclude,
+  disabled = false,
+  label = "",
+  exclude = "",
 }) => {
-  // Generate a unique id for accessibility
-  const selectId = `token-select-${label.replace(/\s+/g, "-").toLowerCase()}`;
+  const filteredOptions = options.filter(
+    (option) => option.currency !== exclude
+  );
+
+  const renderTokenImage = (currency: string) => (
+    <img
+      src={`https://raw.githubusercontent.com/Switcheo/token-icons/main/tokens/${currency}.svg`}
+      alt={currency}
+      style={{ width: 24, height: 24 }}
+      onError={(e) =>
+        ((e.target as HTMLImageElement).style.visibility = "hidden")
+      }
+    />
+  );
+
   return (
-    <div className="token-select">
-      <label htmlFor={selectId}>{label}</label>
-      <select
-        id={selectId}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-      >
-        {options
-          .filter((t) => t.currency !== exclude)
-          .map((t) => (
-            <option key={t.currency} value={t.currency}>
-              {t.currency}
-            </option>
-          ))}
-      </select>
-      {value && (
-        <img
-          src={getTokenIcon(value)}
-          alt={value}
-          className="token-icon"
-          onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
+    <Autocomplete
+      value={value}
+      onChange={(_, newValue) => onChange(newValue || "")}
+      options={filteredOptions.map((option) => option.currency)}
+      disabled={disabled}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          variant="outlined"
+          InputProps={{
+            ...params.InputProps,
+            startAdornment: value ? (
+              <InputAdornment position="start">
+                {renderTokenImage(value)}
+              </InputAdornment>
+            ) : null,
+          }}
         />
       )}
-    </div>
+      renderOption={(props, option) => (
+        <Box component="li" {...props}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {renderTokenImage(option)}
+            {option}
+          </Box>
+        </Box>
+      )}
+      sx={{ mb: 2 }}
+      disableClearable
+      fullWidth
+    />
   );
 };
 
-export default TokenSelector; 
+export default TokenSelector;

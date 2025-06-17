@@ -1,54 +1,159 @@
-import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import TokenSelector from '../TokenSelector';
-import { Price } from '../utils';
+import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import React from "react";
+import TokenSelector from "../TokenSelector";
+import { Price } from "../utils";
 
-describe('TokenSelector', () => {
-  const tokens: Price[] = [
-    { currency: 'ETH', date: '', price: 1 },
-    { currency: 'USDC', date: '', price: 1 },
-    { currency: 'BTC', date: '', price: 1 },
-  ];
+const mockOptions: Price[] = [
+  { currency: "ETH", price: 2000, date: new Date().toISOString() },
+  { currency: "BTC", price: 30000, date: new Date().toISOString() },
+  { currency: "USDT", price: 1, date: new Date().toISOString() },
+];
 
-  it('renders all options except excluded', () => {
-    render(
-      <TokenSelector
-        value="ETH"
-        onChange={() => {}}
-        options={tokens}
-        label="From"
-        exclude="USDC"
-      />
-    );
-    expect(screen.getByLabelText('From')).toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'ETH' })).toBeInTheDocument();
-    expect(screen.queryByRole('option', { name: 'USDC' })).not.toBeInTheDocument();
-    expect(screen.getByRole('option', { name: 'BTC' })).toBeInTheDocument();
+describe("TokenSelector", () => {
+  const mockOnChange = jest.fn();
+
+  beforeEach(() => {
+    mockOnChange.mockClear();
   });
 
-  it('calls onChange when selection changes', () => {
-    const handleChange = jest.fn();
+  it("renders with label", () => {
     render(
       <TokenSelector
-        value="ETH"
-        onChange={handleChange}
-        options={tokens}
+        value=""
+        onChange={mockOnChange}
+        options={mockOptions}
         label="From"
       />
     );
-    fireEvent.change(screen.getByLabelText('From'), { target: { value: 'BTC' } });
-    expect(handleChange).toHaveBeenCalledWith('BTC');
+    expect(screen.getByLabelText("From")).toBeInTheDocument();
   });
 
-  it('shows the token icon', () => {
+  it("displays the selected value", () => {
     render(
       <TokenSelector
         value="ETH"
-        onChange={() => {}}
-        options={tokens}
+        onChange={mockOnChange}
+        options={mockOptions}
         label="From"
       />
     );
-    expect(screen.getByAltText('ETH')).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toHaveValue("ETH");
   });
-}); 
+
+  it("opens dropdown on click", async () => {
+    render(
+      <TokenSelector
+        value=""
+        onChange={mockOnChange}
+        options={mockOptions}
+        label="From"
+      />
+    );
+    
+    const combobox = screen.getByRole("combobox");
+    await userEvent.click(combobox);
+    
+    // Check if all options are displayed
+    mockOptions.forEach(option => {
+      expect(screen.getByText(option.currency)).toBeInTheDocument();
+    });
+  });
+
+  it("filters options based on input", async () => {
+    render(
+      <TokenSelector
+        value=""
+        onChange={mockOnChange}
+        options={mockOptions}
+        label="From"
+      />
+    );
+    
+    const combobox = screen.getByRole("combobox");
+    await userEvent.type(combobox, "ET");
+    
+    expect(screen.getByText("ETH")).toBeInTheDocument();
+    expect(screen.queryByText("BTC")).not.toBeInTheDocument();
+  });
+
+  it("excludes specified token from options", () => {
+    render(
+      <TokenSelector
+        value=""
+        onChange={mockOnChange}
+        options={mockOptions}
+        label="From"
+        exclude="ETH"
+      />
+    );
+    
+    const combobox = screen.getByRole("combobox");
+    fireEvent.mouseDown(combobox);
+    
+    expect(screen.queryByText("ETH")).not.toBeInTheDocument();
+    expect(screen.getByText("BTC")).toBeInTheDocument();
+  });
+
+  it("calls onChange when selecting an option", async () => {
+    render(
+      <TokenSelector
+        value=""
+        onChange={mockOnChange}
+        options={mockOptions}
+        label="From"
+      />
+    );
+    
+    const combobox = screen.getByRole("combobox");
+    await userEvent.click(combobox);
+    await userEvent.click(screen.getByText("ETH"));
+    
+    expect(mockOnChange).toHaveBeenCalledWith("ETH");
+  });
+
+  it("is disabled when disabled prop is true", () => {
+    render(
+      <TokenSelector
+        value=""
+        onChange={mockOnChange}
+        options={mockOptions}
+        label="From"
+        disabled
+      />
+    );
+    expect(screen.getByRole("combobox")).toBeDisabled();
+  });
+
+  it("displays token images", async () => {
+    render(
+      <TokenSelector
+        value="ETH"
+        onChange={mockOnChange}
+        options={mockOptions}
+        label="From"
+      />
+    );
+    
+    // Check if the selected token image is displayed
+    const images = screen.getAllByRole("img");
+    expect(images[0]).toHaveAttribute("alt", "ETH");
+    expect(images[0]).toHaveAttribute("src", expect.stringContaining("ETH.svg"));
+  });
+
+  it("handles image load errors gracefully", async () => {
+    render(
+      <TokenSelector
+        value="ETH"
+        onChange={mockOnChange}
+        options={mockOptions}
+        label="From"
+      />
+    );
+    
+    const image = screen.getAllByRole("img")[0];
+    fireEvent.error(image);
+    
+    expect(image).toHaveStyle({ visibility: "hidden" });
+  });
+});

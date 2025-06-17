@@ -20,15 +20,72 @@ describe('getTokenIcon', () => {
 });
 
 describe('uniqueTokens', () => {
-  const prices: Price[] = [
-    { currency: 'ETH', date: '', price: 1 },
-    { currency: 'ETH', date: '', price: 2 },
-    { currency: 'USDC', date: '', price: 1 },
-    { currency: 'BTC', date: '', price: 1 },
-    { currency: 'USDC', date: '', price: 2 },
-  ];
-  it('returns only unique tokens by currency', () => {
-    const unique = uniqueTokens(prices);
-    expect(unique.map(t => t.currency)).toEqual(['ETH', 'USDC', 'BTC']);
+  it('returns unique tokens from price data', () => {
+    const prices = [
+      { currency: 'ETH', price: 2000, date: new Date().toISOString() },
+      { currency: 'BTC', price: 30000, date: new Date().toISOString() },
+      { currency: 'ETH', price: 2100, date: new Date().toISOString() }, // Duplicate currency
+      { currency: 'USDT', price: 1, date: new Date().toISOString() },
+    ];
+
+    const result = uniqueTokens(prices);
+    expect(result).toHaveLength(3);
+    expect(result.map(p => p.currency)).toEqual(['BTC', 'ETH', 'USDT']); // Alphabetically sorted
+  });
+
+  it('handles empty array', () => {
+    const result = uniqueTokens([]);
+    expect(result).toHaveLength(0);
+  });
+
+  it('preserves the first occurrence of duplicate tokens', () => {
+    const now = new Date().toISOString();
+    const prices = [
+      { currency: 'ETH', price: 2000, date: now },
+      { currency: 'ETH', price: 2100, date: now },
+    ];
+
+    const result = uniqueTokens(prices);
+    expect(result).toHaveLength(1);
+    expect(result[0].price).toBe(2000);
+  });
+
+  it('handles null or undefined prices', () => {
+    const now = new Date().toISOString();
+    const prices = [
+      { currency: 'ETH', price: null as any, date: now },
+      { currency: 'BTC', price: undefined as any, date: now },
+      { currency: 'USDT', price: 1, date: now },
+    ];
+
+    const result = uniqueTokens(prices);
+    expect(result).toHaveLength(1); // Only USDT should be included
+    expect(result[0].currency).toBe('USDT');
+  });
+
+  it('handles invalid price values', () => {
+    const now = new Date().toISOString();
+    const prices = [
+      { currency: 'ETH', price: NaN, date: now },
+      { currency: 'BTC', price: Infinity, date: now },
+      { currency: 'USDT', price: 1, date: now },
+    ];
+
+    const result = uniqueTokens(prices);
+    expect(result).toHaveLength(1); // Only USDT should be included
+    expect(result[0].currency).toBe('USDT');
+  });
+
+  it('sorts tokens alphabetically', () => {
+    const now = new Date().toISOString();
+    const prices = [
+      { currency: 'ZRX', price: 1, date: now },
+      { currency: 'BTC', price: 30000, date: now },
+      { currency: 'ETH', price: 2000, date: now },
+      { currency: 'AAVE', price: 100, date: now },
+    ];
+
+    const result = uniqueTokens(prices);
+    expect(result.map(p => p.currency)).toEqual(['AAVE', 'BTC', 'ETH', 'ZRX']);
   });
 }); 
